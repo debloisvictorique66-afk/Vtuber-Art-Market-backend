@@ -57,8 +57,7 @@
     </div>
 
     <div id="market-view" class="view-section active">
-        <div id="products-container" class="products-grid">
-            </div>
+        <div id="products-container" class="products-grid"></div>
     </div>
 
     <div id="panel-view" class="view-section">
@@ -92,10 +91,11 @@
 </div>
 
 <script>
-    // Simulyatsiya uchun Telegram foydalanuvchi IDsi (Haqiqiy botda tg-api dan olinadi)
+    // Telegram foydalanuvchi IDsi
     const CURRENT_TELEGRAM_USER_ID = 678335943; 
-    // Render xizmatidagi backend serveringizning to'g'ri havolasi:
-    const BACKEND_URL = "https://vtuber-art-market-backend-w4oa.onrender.com,"
+    
+    // TO'G'RILANDI: Havola toza holatga keltirildi va oxiridagi xato belgi o'chirildi!
+    const BACKEND_URL = "https://vtuber-art-market-backend-w4oa.onrender.com";
 
     // Navigatsiya
     function navigate(view) {
@@ -118,7 +118,6 @@
         const container = document.getElementById('products-container');
         try {
             const res = await fetch(BACKEND_URL + '/api/products');
-    
             const products = await res.json();
             if (products.length === 0) {
                 container.innerHTML = "<p style='grid-column: span 2; text-align:center; color:#888;'>No products available in the market yet.</p>";
@@ -142,7 +141,8 @@
         const gate = document.getElementById('subscription-gate');
         const form = document.getElementById('upload-form');
         try {
-            const res = await fetch(BACKEND_URL + '/api/check-user/' + userId);
+            // TO'G'RILANDI: userId xatosi CURRENT_TELEGRAM_USER_ID ga almashtirildi
+            const res = await fetch(BACKEND_URL + '/api/check-user/' + CURRENT_TELEGRAM_USER_ID);
             const data = await res.json();
             if(data.promo_active) {
                 gate.style.display = 'none';
@@ -164,7 +164,7 @@
         document.getElementById('security-error').style.display = 'none';
     });
 
-    // Formani xavfsizlik filtrlari orqali serverga yuborish
+    // Formani serverga yuborish
     document.getElementById('upload-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const errorBanner = document.getElementById('security-error');
@@ -177,7 +177,7 @@
         };
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/upload`, {
+            const res = await fetch(BACKEND_URL + '/api/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -202,4 +202,5 @@
     loadProducts();
 </script>
 </body>
-</html>
+                    </html>
+                    
