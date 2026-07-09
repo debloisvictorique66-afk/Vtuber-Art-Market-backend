@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-
-<html lang="en"> uz
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,7 +93,7 @@
 
 <script>
     // Simulyatsiya uchun Telegram foydalanuvchi IDsi (Haqiqiy botda tg-api dan olinadi)
-    const CURRENT_TELEGRAM_USER_ID = 123456789; 
+    const CURRENT_TELEGRAM_USER_ID = 678335943; 
     // Render xizmatidagi backend serveringizning to'g'ri havolasi:
     const BACKEND_URL = "https://vtuber-art-market-backend-w4oa.onrender.com,"
 
@@ -118,7 +117,8 @@
     async function loadProducts() {
         const container = document.getElementById('products-container');
         try {
-            const res = await fetch(`${BACKEND_URL}/api/products`);
+            const res = await fetch(BACKEND_URL + '/api/products');
+    
             const products = await res.json();
             if (products.length === 0) {
                 container.innerHTML = "<p style='grid-column: span 2; text-align:center; color:#888;'>No products available in the market yet.</p>";
@@ -142,7 +142,7 @@
         const gate = document.getElementById('subscription-gate');
         const form = document.getElementById('upload-form');
         try {
-            const res = await fetch(`${BACKEND_URL}/api/check-user/${CURRENT_TELEGRAM_USER_ID}`);
+            const res = await fetch(BACKEND_URL + '/api/check-user/' + userId);
             const data = await res.json();
             if(data.promo_active) {
                 gate.style.display = 'none';
