@@ -29,7 +29,7 @@ const TG_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 // =======================================================================
 
 // 1. Subscription price (Monthly Telegram Stars amount)
-const ARTIST_SUBSCRIPTION_PRICE_STARS = 500; 
+const ARTIST_SUBSCRIPTION_PRICE_STARS = 1500; 
 
 // 2. PROMO WHITELIST FOR INFLUENCER/PARTNER ARTISTS (Max 500 IDs)
 // Just add the Telegram User IDs as strings separated by commas
