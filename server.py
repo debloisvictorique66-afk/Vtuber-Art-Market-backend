@@ -165,4 +165,26 @@ def save_item():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+# --- YANI QO'SHILGAN FUNKSIYALAR (Buni eski kodning pastiga qo'shing) ---
+user_profiles = {}
+
+@app.route('/api/profile/<int:user_id>', methods=['GET'])
+def get_profile(user_id):
+    return jsonify(user_profiles.get(user_id, {"name": "User", "saved": []}))
+
+@app.route('/api/profile/update', methods=['POST'])
+def update_profile():
+    data = request.json
+    uid = data.get('user_id')
+    user_profiles[uid] = data.get('profile')
+    return jsonify({"message": "Profile updated!"})
+
+@app.route('/api/save-item', methods=['POST'])
+def save_item():
+    data = request.json
+    uid, pid = data.get('user_id'), data.get('product_id')
+    if uid not in user_profiles: user_profiles[uid] = {"name": "User", "saved": []}
+    if pid not in user_profiles[uid]['saved']: user_profiles[uid]['saved'].append(pid)
+    return jsonify({"message": "Item saved!"})
+    
     
