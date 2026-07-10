@@ -203,4 +203,47 @@
 </script>
 </body>
                     </html>
-                    
+<button class="nav-btn" onclick="navigate('profile')">Profile ⚙️</button>
+
+<div id="profile-view" class="view-section">
+    <h3>Account Settings</h3>
+    <input type="text" id="username-input" placeholder="Ismingizni yozing">
+    <button onclick="updateProfile()" class="main-btn">Save Profile</button>
+    <button onclick="toggleTheme()" class="main-btn" style="margin-top:10px;">Toggle Theme (Dark/Light)</button>
+    <h4>Saved Items:</h4>
+    <div id="saved-items-container"></div>
+</div>
+
+<script>
+    // Eski scriptlar o'z o'rnida...
+
+    // YANI QO'SHILGAN FUNKSIYALAR
+    async function updateProfile() {
+        const name = document.getElementById('username-input').value;
+        await fetch(BACKEND_URL + '/api/profile/update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: CURRENT_TELEGRAM_USER_ID, profile: {name: name}})
+        });
+        alert("Profile updated!");
+    }
+
+    async function saveItem(productId) {
+        await fetch(BACKEND_URL + '/api/save-item', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id: CURRENT_TELEGRAM_USER_ID, product_id: productId})
+        });
+        alert("Saved!");
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+</script>
+
+<style>
+    .dark-mode { background: #333 !important; color: #fff !important; }
+    .dark-mode .app-container { background: #444 !important; }
+</style>
+
