@@ -1,0 +1,22 @@
+{
+  "name": "vtuber-art-market-backend",
+  "version": "4.0.0",
+  "description": "Backend API for the VTuber Art Market Telegram Mini App (MongoDB persistence, real Telegram auth, Stars payments, subscriptions)",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.1",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4"
+  }
+}
