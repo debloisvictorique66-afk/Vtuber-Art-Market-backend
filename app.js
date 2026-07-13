@@ -3,7 +3,7 @@
 
 // Point this at your deployed backend. Left as localhost for local dev;
 // swap for your real API URL when you deploy (e.g. https://api.yourdomain.com).
-const API_BASE = window.VTUBER_API_BASE || 'http://localhost:3000';
+const API_BASE = window.VTUBER_API_BASE || 'http:https://vtuber-art-market-backend-wdoa.onrender.com/';
 const MAX_DESCRIPTION_LENGTH = 2000;
 
 const tg = window.Telegram ? window.Telegram.WebApp : null;
