@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VTuber Art Market</title>
+  <style>
+    :root { --main: #6d28d9; --accent: #ec4899; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: system-ui, sans-serif; background:#f3e8ff; height:100vh; overflow:hidden; }
+    .app {
+      max-width:400px; margin:0 auto; height:100vh; background:white;
+      border-radius:20px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.15);
+      display:flex; flex-direction:column;
+    }
+    .header {
+      background:linear-gradient(135deg, var(--main), #a855f7);
+      color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; font-weight:bold;
+    }
+    .search-bar { padding:15px; }
+    .search-bar input {
+      width:100%; padding:14px; border:2px solid #e0d4ff; border-radius:9999px; font-size:16px;
+    }
+    .products-grid {
+      padding:0 15px 15px; display:grid; grid-template-columns:repeat(auto-fill, minmax(165px,1fr)); gap:15px;
+    }
+    .product-card {
+      background:white; border-radius:16px; overflow:hidden; box-shadow:0 4px 15px rgba(109,40,217,0.12);
+      position:relative; cursor:pointer;
+    }
+    .product-card img { width:100%; height:170px; object-fit:cover; }
+    .new-badge {
+      position:absolute; top:10px; left:10px; background:#ef4444; color:white;
+      font-size:12px; padding:3px 10px; border-radius:9999px; font-weight:bold;
+    }
+    .product-info { padding:12px; }
+    .product-info h3 { font-size:15px; margin-bottom:4px; }
+    .by-artist { font-size:13px; color:#7c3aed; margin:4px 0; }
+    .price { color:#eab308; font-weight:bold; font-size:16px; }
+    .bottom-nav {
+      position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:400px;
+      background:var(--main); display:flex; justify-content:space-around; padding:12px 0; color:white;
+    }
+    .nav-btn { background:none; border:none; color:white; font-size:12px; font-weight:600; }
+    .nav-btn.active { color:#fefce8; }
+    .modal-overlay {
+      position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8);
+      display:flex; align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal-content {
+      background:white; width:92%; max-width:380px; border-radius:20px; overflow:hidden;
+    }
+    .modal-preview { width:100%; height:220px; object-fit:cover; }
+    .watermark {
+      position:absolute; bottom:12px; right:12px; color:rgba(255,255,255,0.7);
+      font-size:13px; font-weight:bold; text-shadow:0 1px 4px rgba(0,0,0,0.6);
+    }
+    .buy-button {
+      background:var(--accent); color:white; border:none; padding:16px; width:100%;
+      font-size:17px; font-weight:bold; margin:15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="market" class="screen">
+      <div class="header">
+        <div>VTUBER ART MARKET</div>
+        <div onclick="alert('Cart (Demo)')">🛒</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="search" placeholder="Search art, artist..." onkeyup="filter()">
+      </div>
+      <div class="products-grid" id="grid"></div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-btn active" onclick="switchTab(0)">🏠 MARKET</button>
+      <button class="nav-btn" onclick="switchTab(1)">📊 PANEL</button>
+      <button class="nav-btn" onclick="switchTab(2)">👤 ACCOUNT</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal-overlay" style="display:none" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopImmediatePropagation()">
+      <img id="mimg" class="modal-preview" alt="">
+      <div class="watermark">Vtuber Art Market</div>
+      <div style="padding:20px;">
+        <h2 id="mtitle"></h2>
+        <p id="mby" style="color:#7c3aed"></p>
+        <p id="mdesc"></p>
+        <button class="buy-button" onclick="buy()">Buy with 1500 TG Stars</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {title:"Cute Vtuber Illustration", by:"PixelYume", price:500, img:"https://picsum.photos/id/1015/400/300", desc:"Cute Vtuber character illustration."},
+      {title:"Live2D Model Full Set", by:"Hoshino", price:2500, img:"https://picsum.photos/id/1027/400/300", desc:"Full Live2D model with rigging."},
+      {title:"Chibi Emotes Pack (6)", by:"PixaChan", price:300, img:"https://picsum.photos/id/64/400/300", desc:"Cute chibi emotes pack."}
+    ];
+
+    function render() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${item.img}">
+          <div class="new-badge">NEW</div>
+          <div class="product-info">
+            <h3>${item.title}</h3>
+            <p class="by-artist">by ${item.by}</p>
+            <div class="price">⭐ TG ${item.price}</div>
+          </div>
+        `;
+        card.onclick = () => {
+          document.getElementById('mimg').src = item.img;
+          document.getElementById('mtitle').textContent = item.title;
+          document.getElementById('mby').textContent = 'by ' + item.by;
+          document.getElementById('mdesc').textContent = item.desc;
+          document.getElementById('modal').style.display = 'flex';
+        };
+        grid.appendChild(card);
+      });
+    }
+
+    function filter() {
+      const term = document.getElementById('search').value.toLowerCase();
+      // Simple filter (demo)
+      render();
+    }
+
+    function buy() {
+      alert("✅ 1500 TG Stars paid!\nFile is downloading...");
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function switchTab(n) {
+      alert("This tab is demo. Market works fully.");
+    }
+
+    render();
+  </script>
+</body>
+</html>
