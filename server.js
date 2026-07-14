@@ -34,7 +34,7 @@ const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://Kiradpuser:<db_password>@cluster0.9nxarqi.mongodb.net/?appName=Cluster0&compressors=zlib';
 const WATERMARK_TEXT = 'Vtuber Art Market';
 const MAX_DESCRIPTION_LENGTH = 2000;
-const SUBSCRIPTION_PRICE_STARS = Number(process.env.SUBSCRIPTION_PRICE) || 99;
+const SUBSCRIPTION_PRICE_STARS = Number(process.env.SUBSCRIPTION_PRICE) || 1500;
 const SUBSCRIPTION_PERIOD_SECONDS = 2592000; // 30 days — the only value Telegram allows for Stars subscriptions
 // How old an initData payload is allowed to be, in seconds, before we
 // reject it (defends against someone replaying a captured initData later).
@@ -44,11 +44,11 @@ const INIT_DATA_MAX_AGE_SECONDS = 86400;
 // Database — MongoDB via Mongoose. See README for how to get a free
 // connection string from MongoDB Atlas (takes ~10 minutes).
 // -----------------------------------------------------------------------
-if (!MONGODB_URI) {
+if (!MONGODB_URL) {
   console.warn('⚠️  MONGODB_URL is not set — the server will crash on first DB access. See .env.example.');
 }
 mongoose.set('strictQuery', true);
-mongoose.connect(MONGODB_URI).then(
+mongoose.connect(MONGODB_URL).then(
   () => console.log('✅ Connected to MongoDB'),
   (err) => console.error('❌ MongoDB connection failed:', err.message)
 );
