@@ -31,7 +31,7 @@ app.use(express.json());
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const TG_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const ADMIN_KEY = process.env.ADMIN_KEY || 'change-me-admin-key';
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://Kiradpuser:<db_password>@cluster0.9nxarqi.mongodb.net/?appName=Cluster0&compressors=zlib';
 const WATERMARK_TEXT = 'Vtuber Art Market';
 const MAX_DESCRIPTION_LENGTH = 2000;
 const SUBSCRIPTION_PRICE_STARS = Number(process.env.SUBSCRIPTION_PRICE) || 99;
@@ -45,7 +45,7 @@ const INIT_DATA_MAX_AGE_SECONDS = 86400;
 // connection string from MongoDB Atlas (takes ~10 minutes).
 // -----------------------------------------------------------------------
 if (!MONGODB_URI) {
-  console.warn('⚠️  MONGODB_URI is not set — the server will crash on first DB access. See .env.example.');
+  console.warn('⚠️  MONGODB_URL is not set — the server will crash on first DB access. See .env.example.');
 }
 mongoose.set('strictQuery', true);
 mongoose.connect(MONGODB_URI).then(
