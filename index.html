@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VTuber Art Market</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        :root {
+            --purple: #8b4fff;
+            --pink: #ff4fff;
+            --bg: #d8b4fe;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', system-ui;
+            background: linear-gradient(#c084fc, #a855f7);
+            color: #fff;
+            image-rendering: pixelated;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pixel-border {
+            border: 4px solid #4c1d95;
+            box-shadow: 0 0 0 4px #6b21a8;
+            image-rendering: pixelated;
+        }
+        
+        header {
+            background: #6b21a8;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 6px solid #4c1d95;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cart-icon {
+            position: relative;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff00aa;
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+        }
+        
+        .tab-bar {
+            display: flex;
+            background: #6b21a8;
+            border-top: 6px solid #4c1d95;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: #c026d3;
+            color: white;
+            box-shadow: inset 0 4px 0 #fff;
+        }
+        
+        .screen {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 70px;
+            background: #e0bbff;
+        }
+        
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-bar {
+            margin: 12px;
+            background: white;
+            border: 4px solid #4c1d95;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: 'Press Start 2P';
+            font-size: 13px;
+            outline: none;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px;
+        }
+        
+        .product-card {
+            background: white;
+            border: 4px solid #4c1d95;
+            cursor: pointer;
+            transition: transform 0.1s;
+            image-rendering: pixelated;
+        }
+        
+        .product-card:active {
+            transform: scale(0.95);
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 140px;
+            background: #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: pixelated;
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            font-size: 9px;
+            padding: 2px 6px;
+            transform: rotate(-12deg);
+        }
+        
+        .product-info {
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        .price {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: #e0bbff;
+            border: 6px solid #4c1d95;
+            width: 92%;
+            max-width: 380px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .btn {
+            font-family: 'Press Start 2P';
+            padding: 12px 24px;
+            border: 4px solid #4c1d95;
+            background: #c026d3;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            margin: 8px;
+            text-align: center;
+        }
+        
+        .btn-pink {
+            background: #ec4899;
+        }
+        
+        .btn-green {
+            background: #22c55e;
+        }
+        
+        .artist-stats {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            color: #4c1d95;
+            padding: 12px;
+            margin: 12px;
+            border: 4px solid #4c1d95;
+        }
+        
+        .preview-container {
+            position: relative;
+        }
+        
+        .pixel-text {
+            text-shadow: 2px 2px 0 #4c1d95;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-title">
+            <span>✦</span>
+            <span>VTUBER ART MARKET</span>
+        </div>
+        <div onclick="toggleCart()" class="cart-icon">🛒<span id="cart-count" class="cart-count">0</span></div>
+    </header>
+
+    <!-- MARKET SCREEN -->
+    <div id="market-screen" class="screen active">
+        <div class="search-bar pixel-border">
+            <input id="search-input" type="text" class="search-input" placeholder="Search art, artist...">
+            <button onclick="filterProducts()" style="background:none;border:none;font-size:20px;">🔎</button>
+        </div>
+        
+        <div style="padding:0 12px;display:flex;gap:6px;overflow-x:auto;">
+            <button onclick="filterCategory('all')" class="btn" style="padding:6px 12px;font-size:10px;min-width:60px;">ALL</button>
+            <button onclick="filterCategory('ILLUSTRATION')" class="btn" style="padding:6px 12px;font-size:10px;min-width:60px;">ILLUST</button>
+            <button onclick="filterCategory('LIVE2D')" class="btn" style="padding:6px 12px;font-size:10px;min-width:60px;">LIVE2D</button>
+            <button onclick="filterCategory('MODEL')" class="btn" style="padding:6px 12px;font-size:10px;min-width:60px;">MODEL</button>
+            <button onclick="filterCategory('ASSETS')" class="btn" style="padding:6px 12px;font-size:10px;min-width:60px;">ASSETS</button>
+        </div>
+        
+        <div id="product-grid" class="product-grid"></div>
+    </div>
+
+    <!-- ARTIST PANEL SCREEN -->
+    <div id="panel-screen" class="screen">
+        <div style="padding:16px;background:#6b21a8;color:white;text-align:center;">
+            <h2 class="pixel-text">ARTIST PANEL</h2>
+        </div>
+        
+        <div class="artist-stats pixel-border">
+            <div>
+                <div style="font-size:22px;">12</div>
+                <div style="font-size:10px;">PRODUCTS</div>
+            </div>
+            <div>
+                <div style="font-size:22px;">248</div>
+                <div style="font-size:10px;">SALES</div>
+            </div>
+            <div>
+                <div style="font-size:22px;">⭐ 3450</div>
+                <div style="font-size:10px;">EARNED</div>
+            </div>
+        </div>
+        
+        <button onclick="addProductDemo()" class="btn" style="margin:12px;width:calc(100% - 24px);">+ ADD PRODUCT</button>
+        
+        <div style="padding:12px;">
+            <h3 style="margin:8px 0;color:#4c1d95;">MY PRODUCTS</h3>
+            <div id="my-products-list"></div>
+        </div>
+    </div>
+
+    <!-- ACCOUNT SCREEN -->
+    <div id="account-screen" class="screen">
+        <div style="padding:16px;background:#6b21a8;color:white;display:flex;align-items:center;gap:12px;">
+            <div style="width:64px;height:64px;background:#c026d3;border:4px solid #fff;border-radius:50%;overflow:hidden;">
+                <img src="https://picsum.photos/id/1011/200/200" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div>
+                <div style="font-size:18px;">KiraVT</div>
+                <div style="font-size:12px;">LV. 12 • Vtuber & Artist</div>
+                <div style="background:#4c1d95;height:8px;width:180px;margin-top:6px;border:2px solid #fff;">
+                    <div style="background:#22c55e;height:100%;width:48%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin:12px;background:white;color:#4c1d95;padding:12px;border:4px solid #4c1d95;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-size:28px;">⭐ 1,250</div>
+                    <div>TG STARS</div>
+                </div>
+                <button onclick="topUpStars()" class="btn btn-pink" style="padding:10px 20px;">TOP UP</button>
+            </div>
+        </div>
+        
+        <div style="padding:0 12px;">
+            <div onclick="showSubscriptionModal()" class="btn" style="margin-bottom:12px;">SUBSCRIPTION (1500 ⭐ / month)</div>
+            
+            <div style="background:white;color:#4c1d95;padding:12px;border:4px solid #4c1d95;margin-bottom:12px;">
+                <div style="font-weight:bold;margin-bottom:8px;">SETTINGS</div>
+                <div onclick="toggleTheme()" style="padding:10px 0;border-bottom:2px solid #ddd;cursor:pointer;">🌗 Theme (Light/Dark)</div>
+                <div onclick="alert('Profile settings coming soon!')" style="padding:10px 0;border-bottom:2px solid #ddd;cursor:pointer;">👤 Profile</div>
+                <div onclick="alert('Notifications enabled')" style="padding:10px 0;border-bottom:2px solid #ddd;cursor:pointer;">🛎 Notifications</div>
+                <div onclick="showWhitelistModal()" style="padding:10px 0;cursor:pointer;">🔑 Whitelist (Sponsor)</div>
+            </div>
+            
+            <div onclick="logoutDemo()" class="btn" style="background:#ef4444;">LOGOUT</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="tab-bar">
+        <div onclick="switchScreen(0)" class="tab active" id="tab-0">MARKET</div>
+        <div onclick="switchScreen(1)" class="tab" id="tab-1">PANEL</div>
+        <div onclick="switchScreen(2)" class="tab" id="tab-2">ACCOUNT</div>
+    </div>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content pixel-border">
+            <div id="modal-image" style="height:220px;position:relative;"></div>
+            <div style="padding:16px;">
+                <h2 id="modal-title" style="margin:0 0 8px 0;color:#4c1d95;"></h2>
+                <div id="modal-artist" style="color:#6b21a8;font-size:12px;"></div>
+                <div id="modal-desc" style="margin:16px 0;font-size:12px;line-height:1.4;"></div>
+                <div id="modal-price" style="font-size:18px;color:#22c55e;margin-bottom:12px;"></div>
+                
+                <div style="display:flex;gap:8px;">
+                    <button onclick="addToCartCurrent()" class="btn" style="flex:1;">🛒 ADD TO CART</button>
+                    <button onclick="buyNow()" class="btn btn-green" style="flex:1;">BUY NOW (1500⭐)</button>
+                </div>
+                <button onclick="closeModal()" class="btn" style="width:100%;background:#64748b;margin-top:8px;">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content pixel-border">
+            <div style="padding:16px;">
+                <h2 style="text-align:center;color:#4c1d95;">YOUR CART</h2>
+                <div id="cart-items" style="max-height:300px;overflow-y:auto;"></div>
+                <div style="margin-top:16px;padding-top:12px;border-top:3px solid #4c1d95;">
+                    <div style="display:flex;justify-content:space-between;font-size:14px;">
+                        <span>TOTAL</span>
+                        <span id="cart-total" style="color:#22c55e;">0 ⭐</span>
+                    </div>
+                </div>
+                <button onclick="checkoutCart()" class="btn btn-green" style="width:100%;margin-top:16px;">CHECKOUT WITH STARS</button>
+                <button onclick="closeCartModal()" class="btn" style="width:100%;background:#64748b;">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBSCRIPTION MODAL -->
+    <div id="sub-modal" class="modal">
+        <div class="modal-content pixel-border">
+            <div style="padding:20px;text-align:center;">
+                <h2 style="color:#4c1d95;">MONTHLY SUBSCRIPTION</h2>
+                <p style="font-size:12px;">Unlock full access to download all files for 30 days</p>
+                <div style="font-size:32px;margin:20px 0;color:#22c55e;">1500 ⭐</div>
+                <button onclick="subscribe()" class="btn btn-green" style="width:100%;margin-bottom:12px;">PAY 1500 STARS</button>
+                <button onclick="closeSubModal()" class="btn">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHITELIST MODAL -->
+    <div id="whitelist-modal" class="modal">
+        <div class="modal-content pixel-border">
+            <div style="padding:16px;">
+                <h2 style="color:#4c1d95;">WHITELIST (SPONSORS)</h2>
+                <p style="font-size:11px;">Free access users (edit in code)</p>
+                <div id="whitelist-list" style="margin:12px 0;background:#f3e8ff;padding:8px;max-height:200px;overflow:auto;"></div>
+                <input id="new-whitelist-id" placeholder="Telegram User ID" style="width:100%;padding:8px;margin-bottom:8px;">
+                <button onclick="addToWhitelistDemo()" class="btn">ADD ID</button>
+                <button onclick="closeWhitelistModal()" class="btn">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        // Sample products
+        let products = [
+            {
+                id: 1,
+                title: "Cute Vtuber Illustration",
+                artist: "PixelYume",
+                price: 500,
+                category: "ILLUSTRATION",
+                img: "https://picsum.photos/id/1011/300/300",
+                desc: "Adorable purple catgirl Vtuber portrait. Perfect for your stream overlays and thumbnails. High resolution PNG + PSD source.",
+                hasWatermark: true
+            },
+            {
+                id: 2,
+                title: "Live2D Model Full Set",
+                artist: "Hoshino",
+                price: 2500,
+                category: "LIVE2D",
+                img: "https://picsum.photos/id/201/300/300",
+                desc: "Complete Live2D model with physics, expressions and 12 toggles. Ready to rig!",
+                hasWatermark: true
+            },
+            {
+                id: 3,
+                title: "Chibi Emotes Pack (6)",
+                artist: "PixaChan",
+                price: 300,
+                category: "ASSETS",
+                img: "https://picsum.photos/id/301/300/300",
+                desc: "6 super cute chibi emotes perfect for Twitch and Discord.",
+                hasWatermark: true
+            },
+            {
+                id: 4,
+                title: "Vtuber Room Background",
+                artist: "DreamPixels",
+                price: 200,
+                category: "ASSETS",
+                img: "https://picsum.photos/id/401/300/300",
+                desc: "Cozy anime bedroom background with parallax layers.",
+                hasWatermark: true
+            }
+        ];
+        
+        let cart = [];
+        let currentProduct = null;
+        let isSubscribed = false;
+        let currentUserId = 123456789; // Simulate current user
+        let whitelist = [123456789, 987654321]; // Edit here for sponsors
+        
+        // Render products
+        function renderProducts(filteredProducts) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img">
+                        <img src="\( {product.img}" alt=" \){product.title}">
+                        <div class="watermark">VTUBER ART MARKET</div>
+                    </div>
+                    <div class="product-info">
+                        <div style="font-size:13px;font-weight:bold;color:#4c1d95;">${product.title}</div>
+                        <div style="font-size:11px;color:#666;">by ${product.artist}</div>
+                        <div class="price">⭐ ${product.price}</div>
+                    </div>
+                `;
+                card.onclick = () => showProductModal(product);
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => 
+                p.title.toLowerCase().includes(query) || 
+                p.artist.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+        
+        function filterCategory(cat) {
+            let filtered = products;
+            if (cat !== 'all') {
+                filtered = products.filter(p => p.category === cat);
+            }
+            renderProducts(filtered);
+        }
+        
+        // Show product modal
+        function showProductModal(product) {
+            currentProduct = product;
+            
+            document.getElementById('modal-image').innerHTML = `
+                <img src="${product.img}" style="width:100%;height:100%;object-fit:cover;">
+                <div class="watermark" style="bottom:12px;left:12px;font-size:11px;">VTUBER ART MARKET</div>
+            `;
+            document.getElementById('modal-title').textContent = product.title;
+            document.getElementById('modal-artist').textContent = `by ${product.artist}`;
+            document.getElementById('modal-desc').textContent = product.desc;
+            document.getElementById('modal-price').innerHTML = `⭐ ${product.price} (Preview only)`;
+            
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+        
+        function addToCartCurrent() {
+            if (!currentProduct) return;
+            cart.push(currentProduct
