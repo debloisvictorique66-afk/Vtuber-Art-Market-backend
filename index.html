@@ -551,3 +551,10 @@
             document.getElementById('modal-title').textContent = product.title;
             document.getElementById('modal-artist').textContent = `by ${product.artist}`;
             document.getEle
+function switchTab(index) {
+    const screens = ['market-screen', 'panel-screen', 'account-screen'];
+    document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+    document.getElementById(screens[index]).style.display = 'block';
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tab-${index}`).classList.add('active');
+        }
